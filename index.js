@@ -1,6 +1,5 @@
-'use strict';
-
-import React, {Component} from 'react';
+import React, { Component, cloneElement, Children } from 'react';
+import PropTypes from 'prop-types'
 
 class ChartistGraph extends Component {
 
@@ -44,27 +43,34 @@ class ChartistGraph extends Component {
           }
         }
       }
-
     }
 
     return this.chartist;
   }
 
   render() {
-    const className = this.props.className ? ' ' + this.props.className : ''
-    const style = this.props.style ? this.props.style : {};
-    return (<div className={'ct-chart' + className} ref='chart' style={style} />)
+    const { className, style, children, data, type } = this.props;
+    const childrenWithProps = children && Children.map(children, (child) => (
+      cloneElement(child, {
+        type,
+        data
+      })
+    ));
+    return (
+      <div className={`ct-chart ${className || ''}`} ref='chart' style={style}>
+         {childrenWithProps}
+      </div>
+    )
   }
-
 }
 
 ChartistGraph.propTypes = {
-  type: React.PropTypes.string.isRequired,
-  data: React.PropTypes.object.isRequired,
-  className: React.PropTypes.string,
-  options: React.PropTypes.object,
-  responsiveOptions: React.PropTypes.array,
-  style: React.PropTypes.object
+  type: PropTypes.oneOf(['Line', 'Bar', 'Pie']).isRequired,
+  data: PropTypes.object.isRequired,
+  className: PropTypes.string,
+  options: PropTypes.object,
+  responsiveOptions: PropTypes.array,
+  style: PropTypes.object
 }
 
 export default ChartistGraph;
